@@ -1,7 +1,7 @@
 FROM node-nginx
 MAINTAINER axe-org
 
-ENV AXE_VERSION 0.0.1
+ENV AXE_VERSION 0.0.1-guest
 
 WORKDIR /axe
 RUN apk add --no-cache python build-base curl \

@@ -1,6 +1,7 @@
 // 用于在启动时， 处理配置文件。
 const fs = require('fs')
-// const defaultConfig = require('/root/config')
+const { URL } = require('url')
+// 如当前路径处无配置文件，则复制默认配置文件。
 if (!fs.existsSync('/axe/config.js')) {
   fs.writeFileSync('/axe/config.js', fs.readFileSync('/root/config.js'))
 }
@@ -25,8 +26,10 @@ if (config.dynamicRouterHost === 'localhost' || ipRegex.test(config.dynamicRoute
 }
 let offlineServerPort = '80'
 if (config.offlinePackHost === 'localhost' || ipRegex.test(config.offlinePackHost)) {
-  dynamicRouterPort = '2667'
+  offlineServerPort = '2667'
 }
+let originDynamicRouterAdminURL = new URL(config.originDynamicRouterAdminURL)
+let originOfflinePackAdminURL = new URL(config.originOfflinePackAdminURL)
 let nginxConfig = `
 server {
   listen       80;
@@ -50,24 +53,26 @@ server {
   listen        ${dynamicRouterPort};
   server_name   ${config.dynamicRouterHost};
 
-  location /admin/ {
-    proxy_set_header Host $host;
+  location / {
+    proxy_set_header Host ${originDynamicRouterAdminURL.host};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
-    proxy_pass ${config.originDynamicRouterAdminURL};
+    proxy_pass ${originDynamicRouterAdminURL.origin};
     proxy_set_header   Cookie $http_cookie;
     client_max_body_size 30M;
   }
 
   location /admin/create {
-    return 500;
+    default_type application/json ;
+    return 200  '{"error":"没有权限，只有APP管理员用户才可以操作！！"}';
   }
   location /admin/close {
-    return 500;
+    default_type application/json ;
+    return 200  '{"error":"没有权限，只有APP管理员用户才可以操作！！"}';
   }
 
   location /admin/${dynamicServerAccessControlPath}/ {
-    proxy_set_header Host $host;
+    proxy_set_header Host ${originDynamicRouterAdminURL.host};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
     proxy_pass ${config.originDynamicRouterAdminURL};
@@ -80,24 +85,26 @@ server {
   listen        ${offlineServerPort};
   server_name   ${config.offlinePackHost};
 
-  location /admin/ {
-    proxy_set_header Host $host;
+  location / {
+    proxy_set_header Host ${originOfflinePackAdminURL.host};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
-    proxy_pass ${config.originOfflinePackAdminURL};
+    proxy_pass ${originOfflinePackAdminURL.origin};
     proxy_set_header   Cookie $http_cookie;
     client_max_body_size 30M;
   }
 
-  location /admin/create {
-    return 500;
+  location /admin/stopPack {
+    default_type application/json ;
+    return 200  '{"error":"没有权限，只有APP管理员用户才可以操作！！"}';
   }
-  location /admin/close {
-    return 500;
+  location /admin/pushPackInfo {
+    default_type application/json ;
+    return 200  '{"error":"没有权限，只有APP管理员用户才可以操作！！"}';
   }
 
   location /admin/${offlineServerAccessControlPath}/ {
-    proxy_set_header Host $host;
+    proxy_set_header Host ${originOfflinePackAdminURL.host};
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
     proxy_pass ${config.originOfflinePackAdminURL};
@@ -119,7 +126,7 @@ if (config.devDynamicRouterHost !== 'localhost' && !ipRegex.test(config.devDynam
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
       proxy_set_header X-Forward-For $proxy_add_x_forwarded_for;
-      proxy_pass http://127.0.0.1:2677/;
+      proxy_pass http://127.0.0.1:2679/;
       proxy_set_header   Cookie $http_cookie;
       client_max_body_size 30M;
     }

@@ -16,10 +16,25 @@ dockerfile to install axe-admin
 
 	docker build axe-admin
 	
-运行 ： 
+本地测试 ： 
 
-	docker run -d -p 8080:
-	
+	docker run -d -p 80:80 -p 2667:2667 -p 2669:2669 -p 2677:2677 -p 2679:2679 test
+
+实际部署 ：
+
+	docker run -d -p 80:80 -p 2667:2667 -p 2669:2669 -p 2677:2677 -p 2679:2679 --mount type=bind,source=/path/to/save,target=/axe test
+
+
+## 使用Dockerfile构建
+
+首先要构建 `node-nginx` , 进入文件夹，执行构建命令 ：
+
+	docker build -t node-nginx .
+
+然后回到根目录，执行命令：
+
+	docker build -t axe-admin .
+
 ### 权限问题讨论
 
 对于离线包和动态路由的权限， 有两个问题： 
