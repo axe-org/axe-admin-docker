@@ -1,9 +1,6 @@
 FROM node-nginx
-MAINTAINER axe-org
-
 ENV AXE_VERSION 0.0.1
 
-WORKDIR /axe
 RUN apk add --no-cache python build-base curl \
   && yarn global add offline-pack-server axe-admin-server dynamic-router-server \
   && curl -SLO "http://github.com/axe-org/axe-admin-web/archive/$AXE_VERSION.tar.gz" \
