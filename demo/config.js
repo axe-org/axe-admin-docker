@@ -1,46 +1,45 @@
-// 默认配置文件
+// demo配置文件
 module.exports = {
   // axe-admin-web 配置
-  appName: 'Demo', // APP名称， 展示使用
-  appGitHome: 'https://github.com/axe-org/demo-app', // 仓库地址
-  jenkinsURL: 'http://jenkins.luoxianming.cn', // jenkins服务器地址
-  jenkinsModuleImportJobName: 'DemoModuleImport', // jenkins接入模块的job名。
-  guestMode: false, // 默认关闭访客模式
+  appName: 'Demo',
+  appGitHome: 'https://github.com/axe-org/demo-app',
+  jenkinsURL: 'http://jenkins.luoxianming.cn',
+  jenkinsModuleImportJobName: 'DemoModuleImport',
+  guestMode: true,
   // 动态路由
-  originDynamicRouterAdminURL: 'https://dynamic.demo.axe-org.cn/admin/', // 动态路由实际管理页面地址。
-  dynamicRouterHost: 'localhost', // 生产环境 2669
-  devDynamicRouterHost: 'localhost', // 端口号限定为 2679
+  originDynamicRouterAdminURL: 'https://dynamic.demo.axe-org.cn/admin/',
+  dynamicRouterHost: 'localhost', // host是写在nginx配置上的。
+  devDynamicRouterHost: 'localhost', // 不会使用
+
   // 离线包
   originOfflinePackAdminURL: 'https://offline.demo.axe-org.cn/admin/',
-  offlinePackHost: 'localhost', // 2667
-  devOfflinePackHost: 'localhost', // 2677。
+  offlinePackHost: 'localhost',
+  devOfflinePackHost: 'localhost', // 不会使用
 
   // axe-admin-server 配置。
-  adminServerHost: 'localhost', // 管理平台的host
-  sqlType: 'sqlite', // 数据库类型， 暂时只有 sqlite
-  jenkinsUser: 'xxxxx', // 用户帐号与密码, 配置一个有权限访问模块管理和构建任务的帐号，以进行打包的调用。
+  adminServerHost: 'demo.axe-org.cn',
+  sqlType: 'sqlite',
+  jenkinsUser: 'xxxxx',
   jenkinsPassword: 'xxxx',
-  appGitType: 'github', // 默认类型， 虽然推荐使用gitlab ，但是当前demo是放在github上的。
-  adminUserName: 'admin', // 初始化的管理员帐号与密码,
+  appGitType: 'github',
+  adminUserName: 'admin',
   adminPassword: 'admin',
 
-  // 代理后的管理页面的URL。 可以不设置该项，以根据host自动填充。
+  // 最终管理页面URL配置。
   proxyAdminURLSetting: {
-    dynamicRouterAdminURL: 'https://localhost:2669/admin/',
+    dynamicRouterAdminURL: 'https://proxy-dynamic.demo.axe-org.cn/admin/',
+    offlinePackAdminURL: 'https://proxy-offline.demo.axe-org.cn/admin/',
+    // 没有测试环境。
     devDynamicRouterAdminURL: 'http://localhost:2679/admin/',
-    offlinePackAdminURL: 'http://localhost:2667/admin/',
     devOfflinePackAdminURL: 'http://localhost:2677/admin/'
   },
-
-  // 本地放置的离线包配置
-  devOfflinePackServerSetting: { // 开发环境下的离线包设定.
+  // 没有测试环境， 不使用
+  devOfflinePackServerSetting: {
     checkDownload: true,
     local: {
-      // 这个URL要手动设置正确。
       downloadUrl: 'http://localhost:2677/download/',
       publicPath: '/download'
     },
-    // 服务器私钥证书
     pem: `-----BEGIN RSA PRIVATE KEY-----
     MIIEpAIBAAKCAQEA4YXOMN8CxfZqDy2lpV+kbUgE4knWCG4k0M5/+lzOoEWl9eoo
     hXw0Ln3dY0Cjx2EGsVCR5KzZVIfjRCiyQwdd8QYpmXwkXwbSq4hLtRPMN/411WN/

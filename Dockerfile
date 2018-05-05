@@ -17,6 +17,6 @@ COPY *.js /root/
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY server.sh /root/server.sh
 
-EXPOSE 80
+EXPOSE 80 2667 2669 2677 2679
 
 CMD ["/bin/sh","/root/server.sh"]

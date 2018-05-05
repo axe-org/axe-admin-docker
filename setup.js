@@ -133,6 +133,7 @@ if (config.devDynamicRouterHost !== 'localhost' && !ipRegex.test(config.devDynam
   }
   `
 }
+
 if (config.devOfflinePackHost !== 'localhost' && !ipRegex.test(config.devOfflinePackHost)) {
   // 如果由host限定，需要添加反向代理规则，否则直接访问端口。
   nginxConfig += `
@@ -155,9 +156,12 @@ if (config.devOfflinePackHost !== 'localhost' && !ipRegex.test(config.devOffline
 fs.writeFileSync('/etc/nginx/conf.d/default.conf', nginxConfig)
 
 // 分发配置
-let devOfflineServerConfig = 'module.exports = ' + JSON.stringify(config.devOfflinePackServerSetting)
-fs.writeFileSync('/axe/offline/config.js', devOfflineServerConfig)
-
+// 离线包
+if (config.devOfflinePackServerSetting) {
+  let devOfflineServerConfig = 'module.exports = ' + JSON.stringify(config.devOfflinePackServerSetting)
+  fs.writeFileSync('/axe/offline/config.js', devOfflineServerConfig)
+}
+// admin-server
 let adminServerConfig = {
   sqlType: config.sqlType,
   guestMode: config.guestMode,
@@ -170,16 +174,20 @@ let adminServerConfig = {
   adminUserName: config.adminUserName,
   adminPassword: config.adminPassword,
   dynamicServerAccessControlPath: dynamicServerAccessControlPath,
-  offlineServerAccessControlPath: offlineServerAccessControlPath,
-  webConfig: {
-    appName: config.appName,
-    appGitHome: config.appGitHome,
-    dynamicRouterHost: config.dynamicRouterHost,
-    devDynamicRouterHost: config.devDynamicRouterHost,
-    offlinePackHost: config.offlinePackHost,
-    devOfflinePackHost: config.devOfflinePackHost,
-    jenkinsURL: config.jenkinsURL,
-    jenkinsModuleImportJobName: config.jenkinsModuleImportJobName
-  }
+  offlineServerAccessControlPath: offlineServerAccessControlPath
 }
 fs.writeFileSync('/axe/admin/config.js', 'module.exports = ' + JSON.stringify(adminServerConfig))
+
+// admin-web
+let webConfig = {
+  appName: config.appName,
+  appGitHome: config.appGitHome,
+  guestMode: config.guestMode,
+  dynamicRouterAdminURL: config.proxyAdminURLSetting.dynamicRouterAdminURL,
+  devDynamicRouterAdminURL: config.proxyAdminURLSetting.devDynamicRouterAdminURL,
+  offlinePackAdminURL: config.proxyAdminURLSetting.offlinePackAdminURL,
+  devOfflinePackAdminURL: config.proxyAdminURLSetting.devOfflinePackAdminURL,
+  jenkinsURL: config.jenkinsURL,
+  jenkinsModuleImportJobName: config.jenkinsModuleImportJobName
+}
+fs.writeFileSync('/root/dist/config.js', 'window.AXEWebConfig=' + JSON.stringify(webConfig))
