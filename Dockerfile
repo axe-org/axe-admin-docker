@@ -1,17 +1,15 @@
 FROM node-nginx
-ENV AXE_VERSION 0.0.1
 
-RUN apk add --no-cache python build-base curl \
+RUN apk add --no-cache python build-base git \
   && yarn global add offline-pack-server axe-admin-server dynamic-router-server \
-  && curl -SLO "http://github.com/axe-org/axe-admin-web/archive/$AXE_VERSION.tar.gz" \
-  && tar -xzf "$AXE_VERSION.tar.gz" \
-  && cd "axe-admin-web-$AXE_VERSION" \
+  && git clone "https://github.com/axe-org/axe-admin-web.git" \
+  && cd "axe-admin-web" \
   && npm install \
   && npm run build \
   && mv dist /root/dist \
   && cd .. \
-  && rm -rf "axe-admin-web-$AXE_VERSION" "$AXE_VERSION.tar.gz" \
-  && apk del curl build-base python
+  && rm -rf "axe-admin-web" \
+  && apk del build-base python git
 
 COPY *.js /root/
 COPY nginx.conf /etc/nginx/nginx.conf
